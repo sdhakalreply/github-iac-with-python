@@ -31,6 +31,86 @@ def test_action_settings_use_unreserved_environment_names():
     }
 
 
+def test_action_summary_lists_changes_and_api_call_total(tmp_path):
+    from scripts.run_gitops import write_action_summary
+
+    summary_path = tmp_path / "summary.md"
+    result = {
+        "baseline": False,
+        "changes": {
+            "teams_upsert": [{"name": "team-added", "description": "new"}],
+            "teams_removed": ["team-removed"],
+            "repos_upsert": [
+                {
+                    "before": None,
+                    "after": {"id": "repo-new", "name": "repo-new"},
+                },
+                {
+                    "before": {"id": "repo-old", "name": "repo-old"},
+                    "after": {"id": "repo-old", "name": "repo-renamed"},
+                },
+            ],
+            "repos_removed": ["repo-deleted"],
+            "definitions_upsert": [{"name": "property-added"}],
+        },
+    }
+
+    write_action_summary(result, 12, str(summary_path))
+
+    summary = summary_path.read_text()
+    assert "## Scenario C GitOps result" in summary
+    assert "Applied changes" in summary
+    assert "Repositories added/updated: **2**" in summary
+    assert "Repositories removed: **1**" in summary
+    assert "Teams added/updated: **1**" in summary
+    assert "Teams removed: **1**" in summary
+    assert "Property definitions added/updated: **1**" in summary
+    assert "repo-renamed" in summary
+    assert "repo-deleted" in summary
+    assert "team-added" in summary
+    assert "team-removed" in summary
+    assert "property-added" in summary
+    assert "GitHub API calls: **12**" in summary
+
+
+def test_action_summary_marks_baseline_without_resource_changes(tmp_path):
+    from scripts.run_gitops import write_action_summary
+
+    summary_path = tmp_path / "summary.md"
+
+    write_action_summary({"baseline": True}, 4, str(summary_path))
+
+    summary = summary_path.read_text()
+    assert "Baseline recorded" in summary
+    assert "No GitHub resource changes applied." in summary
+    assert "GitHub API calls: **4**" in summary
+
+
+def test_main_writes_summary_to_actions_summary_file(monkeypatch, tmp_path):
+    from scripts import run_gitops
+
+    summary_path = tmp_path / "github-summary.md"
+    monkeypatch.setenv("GITHUB_REPOSITORY", "owner/config")
+    monkeypatch.setenv("GITHUB_SHA", "commit")
+    monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(summary_path))
+    monkeypatch.setenv("TARGET_ORG", "target")
+    monkeypatch.setenv("API_BASE_URL", "https://api.github.com")
+    monkeypatch.setenv("APP_ID", "123")
+    monkeypatch.setenv("APP_INSTALLATION_ID", "456")
+    monkeypatch.setenv("APP_PRIVATE_KEY", "private-key")
+    monkeypatch.setenv("DEPLOYMENT_TOKEN", "workflow-token")
+    stats = iter([{"total": 5}, {"total": 11}])
+    monkeypatch.setattr(run_gitops.github_http, "get_stats", lambda: next(stats))
+    monkeypatch.setattr(run_gitops, "make_token_provider", lambda config: lambda: "app-token")
+    monkeypatch.setattr(run_gitops, "run", lambda *args: {"baseline": True})
+
+    run_gitops.main()
+
+    summary = summary_path.read_text()
+    assert "Baseline recorded" in summary
+    assert "GitHub API calls: **6**" in summary
+
+
 def test_plan_changes_limits_work_to_yaml_differences():
     previous = {
         "property_definitions": [

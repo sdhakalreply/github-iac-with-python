@@ -3,7 +3,7 @@ import os
 import subprocess
 import tempfile
 
-from src import gitops
+from src import github_http, gitops
 from src.github_auth import make_token_provider
 from src.validator import validate_file
 
@@ -22,6 +22,45 @@ def load_action_settings(environ=None) -> dict:
         "github_app_private_key": environment["APP_PRIVATE_KEY"],
         "deployment_token": environment["DEPLOYMENT_TOKEN"],
     }
+
+
+def write_action_summary(result: dict, api_calls: int, summary_path: str) -> None:
+    lines = ["## Scenario C GitOps result", ""]
+    if result["baseline"]:
+        lines.extend([
+            "**Baseline recorded.**",
+            "",
+            "No GitHub resource changes applied.",
+        ])
+    else:
+        changes = result["changes"]
+        lines.extend([
+            "**Applied changes.**",
+            "",
+            f"- Repositories added/updated: **{len(changes['repos_upsert'])}**",
+            f"- Repositories removed: **{len(changes['repos_removed'])}**",
+            f"- Teams added/updated: **{len(changes['teams_upsert'])}**",
+            f"- Teams removed: **{len(changes['teams_removed'])}**",
+            f"- Property definitions added/updated: **{len(changes['definitions_upsert'])}**",
+        ])
+        for label, names in (
+            (
+                "Repositories added/updated",
+                [change["after"]["name"] for change in changes["repos_upsert"]],
+            ),
+            ("Repository IDs removed", changes["repos_removed"]),
+            ("Teams added/updated", [team["name"] for team in changes["teams_upsert"]]),
+            ("Teams removed", changes["teams_removed"]),
+            (
+                "Property definitions added/updated",
+                [definition["name"] for definition in changes["definitions_upsert"]],
+            ),
+        ):
+            if names:
+                lines.extend(["", f"- {label}: " + ", ".join(f"`{name}`" for name in names)])
+    lines.extend(["", f"- GitHub API calls: **{api_calls}**", ""])
+    with open(summary_path, "a", encoding="utf-8") as summary:
+        summary.write("\n".join(lines))
 
 
 def load_template_at_commit(commit_sha: str, template_path: str, cwd: str) -> dict:
@@ -94,6 +133,7 @@ def main() -> None:
         "github_app_private_key_path": key_path,
     }
     try:
+        api_calls_before = github_http.get_stats()["total"]
         result = run(
             TEMPLATE_PATH,
             os.environ["GITHUB_SHA"],
@@ -103,6 +143,10 @@ def main() -> None:
             app_config,
             make_token_provider(app_config),
         )
+        summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+        if summary_path:
+            api_calls = github_http.get_stats()["total"] - api_calls_before
+            write_action_summary(result, api_calls, summary_path)
         logger.info("GitOps run completed: %s", result)
     finally:
         os.unlink(key_path)

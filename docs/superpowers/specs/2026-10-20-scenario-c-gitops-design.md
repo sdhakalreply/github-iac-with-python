@@ -46,6 +46,8 @@ restores drift using local `stress_template.yaml`, like Scenario A.
 8. Mark the pushed commit as successfully deployed only after all changes
    succeed. Any apply failure fails the workflow and leaves the prior marker
    unchanged.
+9. Write a GitHub Actions job summary with changed resource counts and names,
+   plus total GitHub API calls.
 
 ## Diff and apply behavior
 
@@ -96,6 +98,8 @@ restores drift using local `stress_template.yaml`, like Scenario A.
 - The next workflow run retries all changes since the last successful commit.
 - Webhook template read failures return an error response and do not reconcile.
 - Deployment lookup or record failures fail the workflow.
+- Successful runs write a GitHub Actions job summary with their changes and
+  API-call total.
 
 ## Success criteria
 
