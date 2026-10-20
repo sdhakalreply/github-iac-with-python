@@ -95,7 +95,7 @@ repositories:
     deployment-branches: main
     jira-project-key: JIRA-01
 - id: stress-repo-00002a
-  name: stress-repo-00002b
+  name: stress-repo-00002a
   teams:
   - name: stress-team-004
     role: push
