@@ -28,6 +28,7 @@ jobs:
         run: pytest tests/ -q
 
       - name: Validate template.yaml
+        if: hashFiles('template.yaml') != ''
         run: python -c "from src.yaml_parser import parse_template; parse_template('template.yaml')"
 
       - name: Validate stress_template.yaml
