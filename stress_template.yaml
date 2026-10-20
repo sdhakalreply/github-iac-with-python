@@ -76,8 +76,8 @@ teams:
 - name: stress-team-029
   description: stress team 029
 repositories:
-- id: stress-repo-00001a
-  name: stress-repo-00001a
+- id: stress-repo-00001x
+  name: stress-repo-00001x
   teams:
   - name: stress-team-004
     role: push
