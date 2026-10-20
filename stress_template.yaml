@@ -94,8 +94,56 @@ repositories:
     euc-flag: 'true'
     deployment-branches: main
     jira-project-key: JIRA-01
-- id: stress-repo-00002
-  name: stress-repo-00002
+- id: stress-repo-00002a
+  name: stress-repo-00002b
+  teams:
+  - name: stress-team-004
+    role: push
+  - name: stress-team-018
+    role: pull
+  properties:
+    service-offering-number: SVC-00002
+    adoit-service-id: ADOIT-00002
+    repo-category:
+    - tool
+    - service
+    euc-flag: 'true'
+    deployment-branches: main
+    jira-project-key: JIRA-02
+- id: stress-repo-00002b
+  name: stress-repo-00002b
+  teams:
+  - name: stress-team-004
+    role: push
+  - name: stress-team-018
+    role: pull
+  properties:
+    service-offering-number: SVC-00002
+    adoit-service-id: ADOIT-00002
+    repo-category:
+    - tool
+    - service
+    euc-flag: 'true'
+    deployment-branches: main
+    jira-project-key: JIRA-02
+- id: stress-repo-00002c
+  name: stress-repo-00002c
+  teams:
+  - name: stress-team-004
+    role: push
+  - name: stress-team-018
+    role: pull
+  properties:
+    service-offering-number: SVC-00002
+    adoit-service-id: ADOIT-00002
+    repo-category:
+    - tool
+    - service
+    euc-flag: 'true'
+    deployment-branches: main
+    jira-project-key: JIRA-02
+- id: stress-repo-00002d
+  name: stress-repo-00002d
   teams:
   - name: stress-team-004
     role: push
