@@ -1,0 +1,41 @@
+name: Scenario C GitOps
+
+on:
+  push:
+    branches:
+      - feature/gitops-state
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: scenario-c-gitops-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Apply GitOps changes
+        run: python -m scripts.run_gitops
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_ORG: ${{ vars.GITHUB_ORG }}
+          GITHUB_API_BASE_URL: https://api.github.com
+          GITHUB_APP_ID: ${{ secrets.GITHUB_APP_ID }}
+          GITHUB_APP_INSTALLATION_ID: ${{ secrets.GITHUB_APP_INSTALLATION_ID }}
+          GITHUB_APP_PRIVATE_KEY: ${{ secrets.GITHUB_APP_PRIVATE_KEY }}

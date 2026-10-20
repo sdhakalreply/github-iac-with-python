@@ -1,0 +1,11 @@
+.worktrees/
+__pycache__/
+*.pyc
+.pytest_cache/
+venv/
+.env
+*.pem
+*.bak
+vars.env
+.copilot*
+.copilot/*
