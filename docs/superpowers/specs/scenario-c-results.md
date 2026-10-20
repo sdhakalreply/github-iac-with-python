@@ -24,11 +24,10 @@ Notes:
 ## GitOps setup
 
 The workflow runs on pushes to `feature/gitops-state`. Configure the
-`GITHUB_ORG` Actions variable and these Actions secrets:
-`GITHUB_APP_ID`, `GITHUB_APP_INSTALLATION_ID`, and
-`GITHUB_APP_PRIVATE_KEY`. Install the GitHub App on the target organization
-and the config repository. Grant repository administration, organization
-members, and organization custom properties read/write permissions.
+`TARGET_ORG` Actions variable and these Actions secrets: `APP_ID`,
+`APP_INSTALLATION_ID`, and `APP_PRIVATE_KEY`. Install the GitHub App on the
+target organization. Grant repository administration, organization members,
+and organization custom properties read/write permissions.
 
 The workflow records its successful commit in GitHub Deployments under
 `scenario-c-gitops`. Its first run records a baseline and does not change
@@ -36,3 +35,5 @@ org resources. Later runs compare against the last successful deployment.
 Keep each repository's unique `id` unchanged when renaming it.
 
 The webhook receiver reads local `stress_template.yaml`, like Scenario A.
+For local app runs, `vars.env` uses `TARGET_ORG`, `API_BASE_URL`, `APP_ID`,
+`APP_PRIVATE_KEY_PATH`, `APP_INSTALLATION_ID`, and `WEBHOOK_SECRET`.

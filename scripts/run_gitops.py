@@ -12,6 +12,18 @@ ENVIRONMENT = "scenario-c-gitops"
 TEMPLATE_PATH = "stress_template.yaml"
 
 
+def load_action_settings(environ=None) -> dict:
+    environment = os.environ if environ is None else environ
+    return {
+        "github_org": environment["TARGET_ORG"],
+        "github_api_base_url": environment["API_BASE_URL"],
+        "github_app_id": environment["APP_ID"],
+        "github_app_installation_id": environment["APP_INSTALLATION_ID"],
+        "github_app_private_key": environment["APP_PRIVATE_KEY"],
+        "deployment_token": environment["DEPLOYMENT_TOKEN"],
+    }
+
+
 def load_template_at_commit(commit_sha: str, template_path: str, cwd: str) -> dict:
     repository_path = os.path.relpath(template_path, cwd)
     result = subprocess.run(
@@ -69,15 +81,16 @@ def run(
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     owner, repository = os.environ["GITHUB_REPOSITORY"].split("/", maxsplit=1)
+    settings = load_action_settings()
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as private_key:
         os.chmod(private_key.name, 0o600)
-        private_key.write(os.environ["GITHUB_APP_PRIVATE_KEY"])
+        private_key.write(settings["github_app_private_key"])
         key_path = private_key.name
     app_config = {
-        "github_org": os.environ["GITHUB_ORG"],
-        "github_api_base_url": os.environ["GITHUB_API_BASE_URL"],
-        "github_app_id": os.environ["GITHUB_APP_ID"],
-        "github_app_installation_id": os.environ["GITHUB_APP_INSTALLATION_ID"],
+        "github_org": settings["github_org"],
+        "github_api_base_url": settings["github_api_base_url"],
+        "github_app_id": settings["github_app_id"],
+        "github_app_installation_id": settings["github_app_installation_id"],
         "github_app_private_key_path": key_path,
     }
     try:
@@ -86,7 +99,7 @@ def main() -> None:
             os.environ["GITHUB_SHA"],
             owner,
             repository,
-            os.environ["GITHUB_TOKEN"],
+            settings["deployment_token"],
             app_config,
             make_token_provider(app_config),
         )

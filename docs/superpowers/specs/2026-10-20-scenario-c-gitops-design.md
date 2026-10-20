@@ -75,9 +75,9 @@ restores drift using local `stress_template.yaml`, like Scenario A.
 - Install the GitHub App on the target organization. Grant repository
   administration read/write, organization members read/write, and
   organization custom properties read/write.
-- Add these GitHub Actions secrets: `GITHUB_APP_ID`,
-  `GITHUB_APP_INSTALLATION_ID`, and `GITHUB_APP_PRIVATE_KEY`.
-- Add the Actions variable `GITHUB_ORG` with the target organization name.
+- Add these GitHub Actions secrets: `APP_ID`, `APP_INSTALLATION_ID`, and
+  `APP_PRIVATE_KEY`.
+- Add the Actions variable `TARGET_ORG` with the target organization name.
 - The workflow grants `GITHUB_TOKEN` `contents: read` and
   `deployments: write`. The App installation token performs org-resource
   changes.

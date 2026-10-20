@@ -19,12 +19,12 @@ def load_config(vars_path: str = "vars.env") -> dict:
     
     # Required keys mapping from env var names to output key names
     required_keys = {
-        'GITHUB_ORG': 'github_org',
-        'GITHUB_API_BASE_URL': 'github_api_base_url',
-        'GITHUB_APP_ID': 'github_app_id',
-        'GITHUB_APP_PRIVATE_KEY_PATH': 'github_app_private_key_path',
-        'GITHUB_APP_INSTALLATION_ID': 'github_app_installation_id',
-        'MY_GITHUB_SECRET': 'webhook_secret',
+        'TARGET_ORG': 'github_org',
+        'API_BASE_URL': 'github_api_base_url',
+        'APP_ID': 'github_app_id',
+        'APP_PRIVATE_KEY_PATH': 'github_app_private_key_path',
+        'APP_INSTALLATION_ID': 'github_app_installation_id',
+        'WEBHOOK_SECRET': 'webhook_secret',
     }
     
     # Check all required keys are present and non-empty
@@ -34,10 +34,10 @@ def load_config(vars_path: str = "vars.env") -> dict:
     
     # Build output dict with snake_case keys
     return {
-        'github_org': merged['GITHUB_ORG'],
-        'github_api_base_url': merged['GITHUB_API_BASE_URL'],
-        'github_app_id': merged['GITHUB_APP_ID'],
-        'github_app_private_key_path': merged['GITHUB_APP_PRIVATE_KEY_PATH'],
-        'github_app_installation_id': merged['GITHUB_APP_INSTALLATION_ID'],
-        'webhook_secret': merged['MY_GITHUB_SECRET'],
+        'github_org': merged['TARGET_ORG'],
+        'github_api_base_url': merged['API_BASE_URL'],
+        'github_app_id': merged['APP_ID'],
+        'github_app_private_key_path': merged['APP_PRIVATE_KEY_PATH'],
+        'github_app_installation_id': merged['APP_INSTALLATION_ID'],
+        'webhook_secret': merged['WEBHOOK_SECRET'],
     }

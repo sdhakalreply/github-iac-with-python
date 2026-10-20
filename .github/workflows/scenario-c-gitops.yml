@@ -33,9 +33,9 @@ jobs:
       - name: Apply GitOps changes
         run: python -m scripts.run_gitops
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-          GITHUB_ORG: ${{ vars.GITHUB_ORG }}
-          GITHUB_API_BASE_URL: https://api.github.com
-          GITHUB_APP_ID: ${{ secrets.GITHUB_APP_ID }}
-          GITHUB_APP_INSTALLATION_ID: ${{ secrets.GITHUB_APP_INSTALLATION_ID }}
-          GITHUB_APP_PRIVATE_KEY: ${{ secrets.GITHUB_APP_PRIVATE_KEY }}
+          DEPLOYMENT_TOKEN: ${{ github.token }}
+          TARGET_ORG: ${{ vars.TARGET_ORG }}
+          API_BASE_URL: https://api.github.com
+          APP_ID: ${{ secrets.APP_ID }}
+          APP_INSTALLATION_ID: ${{ secrets.APP_INSTALLATION_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}

@@ -8,6 +8,29 @@ import responses
 from src import gitops
 from src.gitops import plan_changes
 
+
+def test_action_settings_use_unreserved_environment_names():
+    from scripts.run_gitops import load_action_settings
+
+    settings = load_action_settings({
+        "TARGET_ORG": "target-org",
+        "API_BASE_URL": "https://api.github.com",
+        "APP_ID": "123",
+        "APP_INSTALLATION_ID": "456",
+        "APP_PRIVATE_KEY": "private-key",
+        "DEPLOYMENT_TOKEN": "token",
+    })
+
+    assert settings == {
+        "github_org": "target-org",
+        "github_api_base_url": "https://api.github.com",
+        "github_app_id": "123",
+        "github_app_installation_id": "456",
+        "github_app_private_key": "private-key",
+        "deployment_token": "token",
+    }
+
+
 def test_plan_changes_limits_work_to_yaml_differences():
     previous = {
         "property_definitions": [

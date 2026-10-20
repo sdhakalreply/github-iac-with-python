@@ -194,9 +194,9 @@ def main():
     env = dotenv_values(vars_path)
     if not env.get("GITHUB_PAT"):
         sys.exit("GITHUB_PAT missing in " + vars_path)
-    org = env["GITHUB_ORG"]
+    org = env["TARGET_ORG"]
     session = requests.Session()
-    session.base = env["GITHUB_API_BASE_URL"]
+    session.base = env["API_BASE_URL"]
     session.headers.update({
         "Authorization": f"Bearer {env['GITHUB_PAT']}",
         "Accept": "application/vnd.github+json",
